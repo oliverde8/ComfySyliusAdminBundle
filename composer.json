@@ -1,0 +1,22 @@
+{
+    "name": "oliverde8/comfy-sylius-admin-bundle",
+    "type": "library",
+    "description": "Add interfaces to edit comfy configurations in sylius admin.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oliver de Cramer",
+            "homepage": "http://oliver-decramer.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "oliverde8/comfy-bundle": "^1.2",
+        "sylius/admin-bundle": "^1.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "oliverde8\\ComfyEasyAdminBundle\\": "."
+        }
+    }
+}

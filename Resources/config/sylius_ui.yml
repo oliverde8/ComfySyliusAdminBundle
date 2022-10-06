@@ -1,0 +1,22 @@
+sylius_ui:
+    events:
+        sylius.admin.config.index.content:
+            blocks:
+                header:
+                    template: "@oliverde8ComfySyliusAdmin/Config/Index/_header.html.twig"
+                    priority: 30
+                breadcrumb:
+                    template: "@oliverde8ComfySyliusAdmin/Config/Index/_breadcrumb.html.twig"
+                    priority: 20
+                content:
+                    template: "@oliverde8ComfySyliusAdmin/Config/Index/_content.html.twig"
+                    priority: 10
+
+        sylius.admin.config.index.content.form:
+            blocks:
+                header:
+                    template: "@oliverde8ComfySyliusAdmin/Config/Index/content/_menu.html.twig"
+                    priority: 30
+                breadcrumb:
+                    template: "@oliverde8ComfySyliusAdmin/Config/Index/content/_form.html.twig"
+                    priority: 20

@@ -1,0 +1,19 @@
+<div class="sixteen wide mobile sixteen wide tablet twelve wide computer column sylius-product-index">
+    {{ form_errors(form) }}
+    <div class="ui form segment">
+        {% for config_key in config_keys %}
+            <div class="two fields config-entry">
+                <div class="field config-entry__input">
+                    {{ form_label(attribute(form, config_key).value) }}
+                    {{ form_widget(attribute(form, config_key).value) }}
+                    <small>{{ form_help(attribute(form, config_key).value, {'help_html': true}) }}</small>
+                </div>
+                <div class="config-entry__use-parent">
+                    {{ form_widget(attribute(form, config_key).use_parent) }}
+                    {{ form_label(attribute(form, config_key).use_parent) }}
+                </div>
+            </div>
+        {% endfor %}
+        {{ form_row(form.save, {'attr': {'class': 'ui primary button'}}) }}
+    </div>
+</div>

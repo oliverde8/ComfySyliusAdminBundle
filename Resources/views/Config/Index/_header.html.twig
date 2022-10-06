@@ -1,0 +1,4 @@
+{% import '@SyliusUi/Macro/headers.html.twig' as headers %}
+
+{% set header = 'sylius.ui.comfy.title' %}
+{{ headers.default(header|trans, configuration.vars.icon|default('cog'), configuration.vars.subheader|default('sylius.ui.comfy.subtitle')|trans) }}

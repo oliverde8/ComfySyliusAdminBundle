@@ -1,0 +1,66 @@
+{% macro scope_links(scopes, currentScope, configPath, spaces) %}
+    {% for scopeKey, scopeData in scopes %}
+        <option
+            {% if currentScope == scopeKey %} selected {% endif %}
+            value="{{ url('sylius_admin_comfy_config', {"scope": scopeKey, "config": configPath}) }}"
+        >
+            {{ spaces|raw }}{{ scopeData.name }}
+        </option>
+
+        {% if scopeData.sub_scopes %}
+            {{ _self.scope_links(scopeData.sub_scopes, currentScope, configPath, spaces ~ "&nbsp;&nbsp;&nbsp;&nbsp;") }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% macro config_tree(configs, parent, currentScope) %}
+    {% for configKey, config in configs %}
+        {% if config is iterable %}
+            <li data-id="{{ parent ~ "." ~ configKey }}" data-sylius-js-tree-parent="{{ parent ~ "." ~ configKey }}">
+                {% set subElements = _self.config_tree(config, parent ~ "." ~ configKey, currentScope) %}
+
+                {% if subElements|replace({' ': ''}) == "" %}
+                    <div class="sylius-tree__item">
+                        <div class="sylius-tree__icon">
+                            <i class="angle left icon"></i>
+                        </div>
+                        <div class="sylius-tree__title">
+                            <a href="{{ url('sylius_admin_comfy_config', {"scope": currentScope, "config": parent ~ "." ~ configKey}) }}">
+                                {{ ("comfy" ~ parent ~ "." ~ configKey ~ ".name")|trans }}
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="sylius-tree__item">
+                        <div class="sylius-tree__icon" data-sylius-js-tree-trigger="{{ parent ~ "." ~ configKey }}">
+                            <i class="caret down icon"></i>
+                        </div>
+                        <div class="sylius-tree__title">
+                            {{ ("comfy" ~ parent ~ "." ~ configKey ~ ".name")|trans }}
+                        </div>
+                    </div>
+                    <ul>
+                        {{ subElements }}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+<div class="sixteen wide mobile sixteen wide tablet four wide computer column">
+    <div class="ui segment sylius-tree" data-sylius-js-tree>
+        <div class="ui hidden divider small"></div>
+        <div class="sylius-filters">
+            <div class="sylius-filters__field">
+                <select onchange="location = this.options[this.selectedIndex].value;">
+                    {{ _self.scope_links(scopes.sub_scopes, scope, config_path, '') }}
+                </select>
+            </div>
+        </div>
+        <div class="ui hidden divider small"></div>
+        <ul>
+            {{ _self.config_tree(config_tree, "", scope) }}
+        </ul>
+    </div>
+</div>

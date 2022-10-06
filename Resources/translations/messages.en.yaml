@@ -1,0 +1,5 @@
+sylius:
+    ui:
+        comfy:
+            title: "Configuration"
+            subtitle: "Manage your configuration"
