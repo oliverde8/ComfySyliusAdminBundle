@@ -7,6 +7,9 @@
         {
             "name": "Oliver de Cramer",
             "homepage": "http://oliver-decramer.com"
+        },
+        {
+            "name": "DE VASCONCELOS Dominique "
         }
     ],
     "require": {
@@ -16,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "oliverde8\\ComfyEasyAdminBundle\\": "."
+            "oliverde8\\ComfySyliusAdminBundle\\": "."
         }
     }
 }
