@@ -15,41 +15,14 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class ChannelScopeResolver extends AbstractScopeResolver implements ScopeResolverInterface
 {
-    protected ChannelRepository $channelRepository;
-
-    protected ChannelContextInterface $channelContext;
-
-    protected LocaleContextInterface $localeContext;
-
-    protected RequestStack $request;
-
-    protected string $defaultScope;
-
-    protected string $defaultScopeName;
-
-    /**
-     * ChannelScopeResolver constructor.
-     * @param ChannelRepository $channelRepository
-     * @param ChannelContextInterface $channelContext
-     * @param LocaleContextInterface $localeContext
-     * @param RequestStack $request
-     * @param string $defaultScope
-     * @param string $defaultScopeName
-     */
     public function __construct(
-        ChannelRepository $channelRepository,
-        ChannelContextInterface $channelContext,
-        LocaleContextInterface $localeContext,
-        RequestStack $request,
-        string $defaultScope,
-        string $defaultScopeName
+        protected ChannelRepository $channelRepository,
+        protected ChannelContextInterface $channelContext,
+        protected LocaleContextInterface $localeContext,
+        protected RequestStack $request,
+        protected string $defaultScope,
+        protected string $defaultScopeName
     ) {
-        $this->channelRepository = $channelRepository;
-        $this->channelContext = $channelContext;
-        $this->localeContext = $localeContext;
-        $this->request = $request;
-        $this->defaultScope = $defaultScope;
-        $this->defaultScopeName = $defaultScopeName;
     }
 
     /**
@@ -81,18 +54,18 @@ class ChannelScopeResolver extends AbstractScopeResolver implements ScopeResolve
     protected function initScopes(): array
     {
         // Default scope
-        $scopes = [$this->defaultScope => $this->defaultScopeName];
+        $this->scopes = [$this->defaultScope => $this->defaultScopeName];
 
         // Add channel x locale scope
         /** @var Channel $channel */
         foreach ($this->channelRepository->findAll() as $channel) {
-            $scopes[$this->defaultScope . '/' .  $channel->getCode()] = $channel->getName();
+            $this->scopes[$this->defaultScope . '/' .  $channel->getCode()] = $channel->getName();
             foreach ($channel->getLocales() as $locale) {
-                $scopes[$this->defaultScope . '/' .  $channel->getCode() . '/' . $locale->getCode()]
+                $this->scopes[$this->defaultScope . '/' .  $channel->getCode() . '/' . $locale->getCode()]
                     = $locale->getName();
             }
         }
 
-        return $scopes;
+        return $this->scopes;
     }
 }

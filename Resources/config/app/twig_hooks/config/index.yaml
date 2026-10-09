@@ -1,0 +1,66 @@
+sylius_twig_hooks:
+    hooks:
+        'oliverde8_admin.config.index':
+            sidebar:
+                template: '@SyliusAdmin/shared/crud/common/sidebar.html.twig'
+                priority: 200
+            navbar:
+                template: '@SyliusAdmin/shared/crud/common/navbar.html.twig'
+                priority: 100
+            content:
+                template: '@SyliusAdmin/shared/crud/common/content.html.twig'
+                priority: 0
+
+        'oliverde8_admin.config.index.content':
+            flashes:
+                template: '@SyliusAdmin/shared/crud/common/content/flashes.html.twig'
+                priority: 400
+            header:
+                template: '@SyliusAdmin/shared/crud/common/content/header.html.twig'
+                priority: 300
+            form_error_alert:
+                template: '@SyliusAdmin/shared/crud/common/content/form_error_alert.html.twig'
+                priority: 200
+            sections:
+                template: '@oliverde8ComfySyliusAdmin/config/index/content/sections.html.twig'
+                priority: 0
+            footer:
+                template: '@SyliusAdmin/shared/crud/common/content/footer.html.twig'
+                priority: -100
+
+        'oliverde8_admin.config.index.content.header':
+            breadcrumbs:
+                template: '@SyliusAdmin/shared/crud/index/content/header/breadcrumbs.html.twig'
+                configuration:
+                    title: 'sylius.ui.comfy.title'
+                priority: 100
+            title_block:
+                template: '@SyliusAdmin/shared/crud/common/content/header/title_block.html.twig'
+                priority: 0
+
+        'oliverde8_admin.config.index.content.header.title_block':
+            title:
+                template: '@SyliusAdmin/shared/crud/common/content/header/title_block/title.html.twig'
+                configuration:
+                    icon: 'tabler:settings'
+                    title: 'sylius.ui.comfy.title'
+                    subheader: 'sylius.ui.comfy.subtitle'
+                priority: 100
+            actions:
+                template: '@SyliusAdmin/shared/crud/common/content/header/title_block/actions.html.twig'
+                priority: 0
+
+        'oliverde8_admin.config.index.content.header.title_block.actions':
+            save:
+                template: '@oliverde8ComfySyliusAdmin/config/index/content/header/title_block/actions/save.html.twig'
+                priority: 0
+        
+        'oliverde8_admin.config.index.content.sections#left':
+            scopes: 
+                template: '@oliverde8ComfySyliusAdmin/config/index/content/menu.html.twig'
+                priority: 0
+
+        'oliverde8_admin.config.index.content.sections#right':
+            form:
+                template: '@oliverde8ComfySyliusAdmin/config/index/content/form.html.twig'
+                priority: 0

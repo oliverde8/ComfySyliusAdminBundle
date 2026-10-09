@@ -4,7 +4,6 @@
  */
 namespace oliverde8\ComfySyliusAdminBundle\Controller;
 
-use oliverde8\ComfyBundle\Exception\UnknownScopeException;
 use oliverde8\ComfyBundle\Form\Type\ConfigsForm;
 use oliverde8\ComfyBundle\Manager\ConfigDisplayManager;
 use oliverde8\ComfyBundle\Resolver\ScopeResolverInterface;
@@ -13,35 +12,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ConfigController extends AbstractController
 {
-    protected VisibleConfigsResolver $visibleConfigsResolver;
-    protected ScopeResolverInterface $scopeResolver;
-    protected ConfigDisplayManager $configDisplayManager;
-
-    /**
-     * ConfigController constructor.
-     *
-     * @param VisibleConfigsResolver $visibleConfigsResolver
-     * @param ScopeResolverInterface $scopeResolver
-     * @param ConfigDisplayManager $configDisplayManager
-     */
     public function __construct(
-        VisibleConfigsResolver $visibleConfigsResolver,
-        ScopeResolverInterface $scopeResolver,
-        ConfigDisplayManager $configDisplayManager
-    )
-    {
-        $this->visibleConfigsResolver = $visibleConfigsResolver;
-        $this->scopeResolver = $scopeResolver;
-        $this->configDisplayManager = $configDisplayManager;
+        protected VisibleConfigsResolver $visibleConfigsResolver,
+        protected ScopeResolverInterface $scopeResolver,
+        protected ConfigDisplayManager $configDisplayManager,
+        protected TranslatorInterface $translator
+    ) {
     }
 
-    /**
-     * @Route("/comfy/configs", name="sylius_admin_comfy_config")
-     */
+    #[Route('/comfy/configs', name: 'sylius_admin_comfy_config')]
     public function index(Request $request): Response
     {
         $scope = $this->getConfigScopeFromRequest($request);
@@ -54,22 +38,23 @@ class ConfigController extends AbstractController
 
         $form = $this->createForm(ConfigsForm::class, ['scope' => $scope, 'configs' => $configs]);
         $form->handleRequest($request);
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                // We need to recreate the form because config won't take their inheritance properly
-                // into account untill all of them are saved.
-                $form = $this->createForm(ConfigsForm::class, ['scope' => $scope, 'configs' => $configs]);
-                return $this->redirect($request->getRequestUri());
-            }
+        if ($form->isSubmitted() && $form->isValid()) {
+            // We need to recreate the form because config won't take their inheritance properly
+            // into account untill all of them are saved.
+            $form = $this->createForm(ConfigsForm::class, ['scope' => $scope, 'configs' => $configs]);
+            $this->addFlash('success', $this->translator->trans('sylius.ui.comfy.success_message'));
+            return $this->redirect($request->getRequestUri());
         }
 
+        $configTree = $this->visibleConfigsResolver->getAllAllowedConfigs();
+
         return $this->render(
-            "@oliverde8ComfySyliusAdmin/Config/index.html.twig",
+            "@oliverde8ComfySyliusAdmin/config/index.html.twig",
             [
                 'form' => $form->createView(),
                 'config_path' => $configPath,
                 'config_keys' => $this->getConfigKeys($configs),
-                'config_tree' => $this->visibleConfigsResolver->getAllAllowedConfigs(),
+                'config_tree_data' => $this->getConfigTreeData($configTree, $scope, $configPath),
                 'scope' => $scope,
                 'scopes' => $this->configDisplayManager->getScopeTreeForHtml(),
             ]
@@ -81,12 +66,10 @@ class ConfigController extends AbstractController
      *
      * @param Request $request
      * @return string
-     *
-     * @throws UnknownScopeException
      */
     protected function getConfigPathFromRequest(Request $request): string
     {
-        $configPath = $request->get('config', null);
+        $configPath = $request->query->get('config', null);
         $configPath = str_replace(".", "/", $configPath);
         $configPath = ltrim($configPath, '/');
 
@@ -108,13 +91,55 @@ class ConfigController extends AbstractController
      */
     protected function getConfigScopeFromRequest(Request $request): string
     {
-        $scope = $this->scopeResolver->getScope($request->get("scope", null));
+        $scope = $this->scopeResolver->getScope($request->query->get("scope", null));
 
         if (!$this->scopeResolver->validateScope($scope)) {
             throw new NotFoundHttpException("Unknown scope.");
         }
 
         return $scope;
+    }
+
+    /**
+     * Flatten the config tree into the node structure expected by InfiniteTree.
+     *
+     * @param array $configTree
+     * @param string $scope
+     * @param string $currentPath
+     * @param string $parent
+     *
+     * @return array
+     */
+    protected function getConfigTreeData(
+        array $configTree,
+        string $scope,
+        string $currentPath,
+        string $parent = ''
+    ): array {
+        $nodes = [];
+        $currentDottedPath = str_replace('/', '.', $currentPath);
+
+        foreach ($configTree as $configKey => $children) {
+            if (!is_array($children)) {
+                continue;
+            }
+
+            $path = $parent . '.' . $configKey;
+            $dottedPath = ltrim($path, '.');
+            $childNodes = $this->getConfigTreeData($children, $scope, $currentPath, $path);
+
+            $nodes[] = [
+                'id' => $dottedPath,
+                'name' => $this->translator->trans('comfy' . $path . '.name'),
+                'url' => [] === $childNodes
+                    ? $this->generateUrl('sylius_admin_comfy_config', ['scope' => $scope, 'config' => $path])
+                    : null,
+                'active' => $dottedPath === $currentDottedPath,
+                'children' => $childNodes,
+            ];
+        }
+
+        return $nodes;
     }
 
     /**

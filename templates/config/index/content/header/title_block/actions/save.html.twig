@@ -1,0 +1,9 @@
+{% import '@SyliusAdmin/shared/helper/button.html.twig' as button %}
+
+{% set form = hookable_metadata.context.form|default(null) %}
+
+{{ button.primary({
+    text: 'sylius.ui.comfy.save'|trans,
+    type: 'submit',
+    form: form.vars.id|default(null)
+}) }}

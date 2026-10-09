@@ -1,0 +1,51 @@
+{% macro scope_links(scopes, currentScope, configPath, spaces) %}
+    {% for scopeKey, scopeData in scopes %}
+        <option
+            {% if currentScope == scopeKey %} selected {% endif %}
+            value="{{ url('sylius_admin_comfy_config', {"scope": scopeKey, "config": configPath}) }}"
+        >
+            {{ spaces|raw }}{{ scopeData.name }}
+        </option>
+
+        {% if scopeData.sub_scopes %}
+            {{ _self.scope_links(scopeData.sub_scopes, currentScope, configPath, spaces ~ "&nbsp;&nbsp;&nbsp;&nbsp;") }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% set scopes = hookable_metadata.context.scopes %}
+{% set scope = hookable_metadata.context.scope %}
+{% set config_path = hookable_metadata.context.config_path %}
+{% set config_tree_data = hookable_metadata.context.config_tree_data %}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="sylius-filters">
+            <div class="sylius-filters__item">
+                <label class="form-label" for="scope">{{ 'sylius.ui.comfy.scope'|trans }}</label>
+                <select id="scope" class="form-select" onchange="location = this.options[this.selectedIndex].value;">
+                    {{ _self.scope_links(scopes.sub_scopes, scope, config_path, '') }}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="comfy-sections" class="card">
+    <div class="card-body">
+        <h2 class="card-title">{{ 'sylius.ui.comfy.sections'|trans }}</h2>
+
+        <div data-comfy-config-tree data-comfy-config-tree-data="{{ config_tree_data|json_encode }}">
+            <div class="d-none" data-comfy-config-tree-prototype>
+                <div class="d-flex justify-content-between infinite-tree-item">
+                    <div class="infinite-tree-node">
+                        <span class="infinite-tree-toggler" data-infinite-tree-toggler></span>
+                        <a class="infinite-tree-title" data-infinite-tree-title></a>
+                    </div>
+                </div>
+            </div>
+
+            <div data-comfy-config-tree-target></div>
+        </div>
+    </div>
+</div>

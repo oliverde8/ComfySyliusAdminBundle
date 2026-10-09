@@ -10,16 +10,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AdminMenuListener
 {
-    protected FactoryInterface $factory;
-
-    protected TranslatorInterface $translator;
-
     public function __construct(
-        FactoryInterface $factory,
-        TranslatorInterface $translator
+        protected FactoryInterface $factory,
+        protected TranslatorInterface $translator
     ) {
-        $this->factory = $factory;
-        $this->translator = $translator;
     }
 
     /**
@@ -32,7 +26,7 @@ class AdminMenuListener
         if (!is_null($menu)) {
             $configMenu = $this->factory->createItem('comfy', ['route' => 'sylius_admin_comfy_config'])
                 ->setLabel($this->translator->trans('sylius.ui.comfy.title'))
-                ->setLabelAttribute('icon', 'cog');
+                ->setLabelAttribute('icon', 'tabler:settings');
 
             $menu->addChild($configMenu);
         }

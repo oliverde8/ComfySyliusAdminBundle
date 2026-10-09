@@ -1,0 +1,2 @@
+imports:
+    - { resource: '@oliverde8ComfySyliusAdminBundle/Resources/config/app/twig_hooks/**/*.yaml' }

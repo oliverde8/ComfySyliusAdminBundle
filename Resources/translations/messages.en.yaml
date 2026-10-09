@@ -3,3 +3,7 @@ sylius:
         comfy:
             title: "Configuration"
             subtitle: "Manage your configuration"
+            save: "Save configs"
+            scope: "Scope"
+            sections: "Sections"
+            success_message: "Configuration saved successfully"

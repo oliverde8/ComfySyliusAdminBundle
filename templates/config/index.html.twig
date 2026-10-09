@@ -1,0 +1,7 @@
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
+
+{% block title %}{{ 'sylius.ui.comfy.title'|trans }} {{ parent() }}{% endblock %}
+
+{% block body %}
+    {% hook 'oliverde8_admin.config.index' with _context %}
+{% endblock %}

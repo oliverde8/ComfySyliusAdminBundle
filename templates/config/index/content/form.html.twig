@@ -1,0 +1,40 @@
+{% set form = hookable_metadata.context.form %}
+{% set config_keys = hookable_metadata.context.config_keys %}
+{% set config_path = hookable_metadata.context.config_path %}
+
+{% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
+
+{# The submit button is rendered in the page header, see the
+   'oliverde8_admin.config.index.content.header.title_block.actions' hook. #}
+{% do form.save.setRendered %}
+
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': form.vars.id}}) }}
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">{{ ("comfy." ~ config_path|replace({'/': '.'}) ~ ".name")|trans }}</h2>
+        {{ form_errors(form) }}
+
+        {% for config_key in config_keys %}
+            <div class="row mb-3 align-items-center config-entry">
+                <div class="col config-entry__input">
+                    {{ form_label(attribute(form, config_key).value) }}
+                    {{ form_widget(attribute(form, config_key).value) }}
+                    <small class="form-hint">
+                        {{ form_help(attribute(form, config_key).value, {'help_html': true}) }}
+                    </small>
+                </div>
+                <div class="col-auto config-entry__use-parent">
+                    <div class="form-check">
+                        {{ form_widget(attribute(form, config_key).use_parent) }}
+                        {{ form_label(attribute(form, config_key).use_parent) }}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{{ form_end(form) }}
+
+

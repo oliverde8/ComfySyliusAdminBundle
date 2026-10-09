@@ -13,13 +13,23 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
-        "oliverde8/comfy-bundle": "^1.2",
-        "sylius/admin-bundle": "^1.11"
+        "php": "^8.2",
+        "oliverde8/comfy-bundle": "dev-master",
+        "sylius/admin-bundle": "^2.0",
+        "sylius/twig-hooks": "^0.9",
+        "symfony/framework-bundle": "^6.4 || ^7.0"
     },
     "autoload": {
         "psr-4": {
             "oliverde8\\ComfySyliusAdminBundle\\": "."
+        }
+    },
+    "require-dev": {
+        "rector/rector": "^2.3"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
         }
     }
 }
